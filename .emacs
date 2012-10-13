@@ -14,8 +14,20 @@
  )
 (global-set-key [f1] 'hs-toggle-hiding)
 (global-set-key [f7] 'compile)
-(setq default-frame-alist
-'((height . 34) (width . 75) (menu-bar-lines . 20) (tool-bar-lines . 10))) 
+
+
+(defun my-maximized ()
+  (interactive)
+  (x-send-client-message
+   nil 0 nil "_NET_WM_STATE" 32
+   '(1 "_NET_WM_STATE_MAXIMIZED_HORZ" 0))
+  (interactive)
+  (x-send-client-message
+   nil 0 nil "_NET_WM_STATE" 32
+   '(1 "_NET_WM_STATE_MAXIMIZED_VERT" 0)))
+(my-maximized)
+;;(setq default-frame-alist 
+;;'((height . 34) (width . 110) (menu-bar-lines . 20) (tool-bar-lines . 10))) 
 
 (setq indent-tabs-mode t)
 (setq default-tab-width 4)
@@ -33,16 +45,11 @@
 (setq column-number-mode t)
 ;;光标显示为一竖线
 (setq-default cursor-type 'bar)
+;;垂直分隔窗口
+(setq split-height-threshold nil)
+(setq split-width-threshold 0)
 
-(defun my-maximized ()
-  (interactive)
-  (x-send-client-message
-   nil 0 nil "_NET_WM_STATE" 32
-   '(1 "_NET_WM_STATE_MAXIMIZED_HORZ" 0))
-  (interactive)
-  (x-send-client-message
-   nil 0 nil "_NET_WM_STATE" 32
-   '(1 "_NET_WM_STATE_MAXIMIZED_VERT" 0)))
+
 
 (add-to-list 'load-path "~/.emacs.d/el-get/el-get")
 
@@ -168,11 +175,10 @@
   (interactive)
   (with-current-buffer gud-comint-buffer (comint-skip-input))
   (kill-process (get-buffer-process gud-comint-buffer))
-  (x-send-client-message nil 0 nil "_NET_WM_STATE" 32
-             '(2 "_NET_WM_STATE_MAXIMIZED_HORZ" 10))
-  (x-send-client-message nil 0 nil "_NET_WM_STATE" 32
-             '(2 "_NET_WM_STATE_MAXIMIZED_VERT" 10))
-  ;;(kill-buffer "*gud-test*")
+  ;;(x-send-client-message nil 0 nil "_NET_WM_STATE" 32
+  ;;           '(2 "_NET_WM_STATE_MAXIMIZED_HORZ" 10))
+  ;;(x-send-client-message nil 0 nil "_NET_WM_STATE" 32
+  ;;           '(2 "_NET_WM_STATE_MAXIMIZED_VERT" 10))
   (delete-window (get-buffer-window "*gud-test*"))
   (kill-buffer "*compilation*")
   (kill-buffer "*gud-test*")
@@ -198,3 +204,7 @@
 (global-set-key [S-f10] 'gud-jump)
 (global-set-key [f11] 'gud-step)
 (global-set-key [C-f11] 'gud-finish)
+
+;;R ESS
+(add-to-list 'load-path "~/.emacs.d/ess/lisp")
+(require 'ess-site)
