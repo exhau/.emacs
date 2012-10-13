@@ -15,6 +15,12 @@
 (global-set-key [f1] 'hs-toggle-hiding)
 (global-set-key [f7] 'compile)
 
+;;重新载入buffer
+(defun refresh-file ()  
+  (interactive)  
+  (revert-buffer t (not (buffer-modified-p)) t))  
+(global-set-key [(control f5)] 'refresh-file) 
+
 
 (defun my-maximized ()
   (interactive)
@@ -169,7 +175,7 @@
 
 
 ;;GDB调试快捷键
-;;(require 'gdb-ui)
+(require 'gud)
 (defun gud-kill ()
   "Kill gdb process."
   (interactive)
@@ -185,20 +191,34 @@
   ;;(delete-window (get-buffer-window "*compilation*"))
   ;;(kill-buffer-and-window)
 )
-(defun gud-and-max ()
+(defun gdb-or-gud-go ()
+  "If gdb isn't running; run gdb, else call gud-go."
   (interactive)
-  (gdb (gud-query-cmdline 'gdb))
-  (my-maximized))
+  (if (and gud-comint-buffer
+  (buffer-name gud-comint-buffer)
+  (get-buffer-process gud-comint-buffer)
+  (with-current-buffer gud-comint-buffer (eq gud-minor-mode 'gdba)))
+  (gud-call (if gdb-active-process "continue" "run") "")
+  (gdb (gud-query-cmdline 'gdb))))
+  (defun gud-and-max ()
+    (interactive)
+    (gdb (gud-query-cmdline 'gdb))
+    (my-maximized))
+(defun gud-break-remove ()
+  "Set/clear breakpoint."
+  (interactive)
+  (save-excursion
+  (if (eq (car (fringe-bitmaps-at-pos (point))) 'breakpoint)
+  (gud-remove nil)
+  (gud-break nil))))
 (setq gdb-many-windows t)
-;;(global-set-key [f5] 'gdb-or-gud-go)
-;;(global-set-key [S-f5] '(lambda () (interactive) (gud-call "quit" nil)))
-(global-set-key [f5] 'gud-and-max)
-(global-set-key [C-f5] 'gud-run)
+(global-set-key [f5] 'gdb-or-gud-go)
 (global-set-key [S-f5] 'gud-kill)
 (global-set-key [f8] 'gud-print)
 (global-set-key [C-f8] 'gud-pstar)
-(global-set-key [f9] 'gud-break)
-(global-set-key [C-f9] 'gud-remove)
+(global-set-key [f9] 'gud-break-remove)
+;;(global-set-key [f9] 'gud-break)
+;;(global-set-key [C-f9] 'gud-remove)
 (global-set-key [f10] 'gud-next)
 (global-set-key [C-f10] 'gud-until)
 (global-set-key [S-f10] 'gud-jump)
