@@ -5,7 +5,8 @@
  ;; If there is more than one, they won't work right.
  '(TeX-view-program-selection (quote (((output-dvi style-pstricks) "dvips and gv") (output-dvi "xdvi") (output-pdf "Okular") (output-html "xdg-open"))))
  '(inhibit-startup-screen t)
- '(preview-auto-cache-preamble nil))
+ '(preview-auto-cache-preamble nil)
+ '(safe-local-variable-values (quote ((outline-minor-mode) (whitespace-style face tabs spaces trailing lines space-before-tab::space newline indentation::space empty space-after-tab::space space-mark tab-mark newline-mark)))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -83,7 +84,14 @@
 ))
 ;;reftex目录自动查看
 (add-hook 'latex-mode-hook 'turn-on-reftex)
-(setq reftex-plug-into-auctex t)
+(add-hook 'LaTeX-mode-hook (lambda ()
+               (TeX-fold-mode 1)))
+(setq reftex-plug-into-AUCTeX t)
+(mapc (lambda (mode)
+         (add-hook 'LaTeX-mode-hook mode))
+         (list 'LaTeX-math-mode
+               'turn-on-reftex
+               'linum-mode))
 
 (add-to-list 'load-path
               "~/.emacs.d/el-get/yasnippet")
@@ -228,3 +236,14 @@
 ;;R ESS
 (add-to-list 'load-path "~/.emacs.d/ess/lisp")
 (require 'ess-site)
+(add-hook 'inferior-ess-mode-hook
+  '(lambda nil
+         (define-key inferior-ess-mode-map [\C-up]
+                'comint-previous-matching-input-from-input)
+         (define-key inferior-ess-mode-map [\C-down]
+                'comint-next-matching-input-from-input)
+         (define-key inferior-ess-mode-map [\C-x \t]
+                'comint-dynamic-complete-filename)
+    )
+)
+
