@@ -83,10 +83,8 @@
         (define-key LaTeX-mode-map "\C-m" 'reindent-then-newline-and-indent)
 ))
 ;;reftex目录自动查看
-(add-hook 'latex-mode-hook 'turn-on-reftex)
-(add-hook 'LaTeX-mode-hook (lambda ()
-               (TeX-fold-mode 1)))
-(setq reftex-plug-into-AUCTeX t)
+;;(add-hook 'latex-mode-hook 'turn-on-reftex)
+;;(setq reftex-plug-into-AUCTeX t)
 (mapc (lambda (mode)
          (add-hook 'LaTeX-mode-hook mode))
          (list 'LaTeX-math-mode
@@ -97,7 +95,7 @@
               "~/.emacs.d/el-get/yasnippet")
 (require 'yasnippet)
 (yas-global-mode 1)
-;;最好直接修改yasnippet.el(defcustom yas-trigger-key 
+;;最好直接修改yasnippet.el 搜索(tab)和"TAB" 不然还是不能解放TAB键
 ;;(setq yas-trigger-key "<C-tab>")
 
 (add-to-list 'load-path "/home/yoh/.emacs.d/auto-complete")
@@ -244,6 +242,16 @@
                 'comint-next-matching-input-from-input)
          (define-key inferior-ess-mode-map [\C-x \t]
                 'comint-dynamic-complete-filename)
+         (local-set-key "\C-cx"  'ess-rdired)
     )
 )
+(server-start)
+(setq-default ess-dialect "R")
+(defun ess-set-language ()
+  (setq-default ess-language "R")
+  (setq ess-language "R")
+  )
+(add-hook 'ess-post-run-hook 'ess-set-language t)
+;;(autoload 'ess-rdired "ess-rdired"  
+;;   "View *R* objects in a dired-like buffer." t)
 
